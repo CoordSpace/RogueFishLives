@@ -1,0 +1,59 @@
+streamers:
+  99999999:
+    name: twitchaccountname
+    display_name: CustomUserName
+
+twitter:
+  consumer_key:
+  consumer_secret:
+  access_token_key:
+  access_token_secret:
+  send_start: True
+  send_end: False
+
+twitch:
+  client_id:
+  oauth_token:
+
+tweet_format:
+  stream_start:
+    - "[{time}] {display_name} is now streaming {game}! https://twitch.tv/{name}"
+    - "[{time}] {display_name} is now playing {game}! https://twitch.tv/{name}"
+    - "[{time}] {display_name} is now streaming {game} on #twitch https://twitch.tv/{name}"
+    - "[{time}] {display_name} is currently streaming {game}! https://twitch.tv/{name}"
+    - "[{time}] {display_name} is now playing {game}! https://twitch.tv/{name}"
+  stream_end:
+    - "[{time}] {display_name}'s stream is now over. Thanks for watching!"
+    - "[{time}] {display_name}'s stream has ended."
+    - "[{time}] {display_name} is now offline. Thanks for watching!"
+
+polling_interval: 180
+
+logging:
+  version: 1
+  handlers:
+    default:
+      class: logging.StreamHandler
+      formatter: brief
+      level: ERROR
+      stream: ext://sys.stdout
+    file:
+      class : logging.handlers.TimedRotatingFileHandler
+      formatter: precise
+      when: W0
+      backupCount: 4
+      filename: roguefish.log
+      level: DEBUG
+  formatters:
+    brief:
+      format: '%(message)s'
+    precise:
+      format: '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'
+      datefmt: '%Y-%m-%d %H:%M:%S'
+  loggers:
+    '':
+      level: DEBUG
+      handlers:
+        - file
+        - default
+

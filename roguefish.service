@@ -1,0 +1,11 @@
+[Unit]
+Description=Simple Twitch-to-Twitter Bot
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/rougefishlives/
+ExecStart=/path/to/rougefishlives/venv/bin/python main.py config.yaml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
