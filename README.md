@@ -4,7 +4,7 @@ A configurable Twitter and/or Mastodon bot built in python3 for sending out real
 
 ### Requires:
 
-`pip install python-twitch-client python-twitter Mastodon.py`
+`pip install python-twitch-client python-twitter Mastodon.py PyYAML`
 
 ### Usage:
 
