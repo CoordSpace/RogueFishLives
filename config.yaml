@@ -1,15 +1,17 @@
-streamers:
-  99999999:
-    name: twitchaccountname
-    display_name: CustomUserName
+send_start: True
+send_end: False
 
 twitter:
   consumer_key:
   consumer_secret:
   access_token_key:
   access_token_secret:
-  send_start: True
-  send_end: False
+
+mastodon:
+  api_base_url:
+  client_key:
+  client_secret:
+  access_token:
 
 twitch:
   client_id:
@@ -31,29 +33,29 @@ polling_interval: 180
 
 logging:
   version: 1
-  handlers:
-    default:
-      class: logging.StreamHandler
-      formatter: brief
-      level: ERROR
-      stream: ext://sys.stdout
-    file:
-      class : logging.handlers.TimedRotatingFileHandler
-      formatter: precise
-      when: W0
-      backupCount: 4
-      filename: roguefish.log
-      level: DEBUG
   formatters:
     brief:
       format: '%(message)s'
     precise:
       format: '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'
       datefmt: '%Y-%m-%d %H:%M:%S'
-  loggers:
-    '':
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: brief
+      level: ERROR
+      stream: ext://sys.stdout
+    file:
+      class : logging.handlers.TimedRotatingFileHandler
       level: DEBUG
+      formatter: precise
+      interval: 1
+      when: D
+      backupCount: 7
+      filename: dopefish_mastodon.log
+  root:
+      level: INFO
       handlers:
         - file
-        - default
-
+        - console
+      propagate: True

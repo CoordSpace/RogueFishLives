@@ -5,6 +5,7 @@ from yaml import load
 from time import gmtime, strftime, sleep
 from random import choice
 from twitch import TwitchClient
+from mastodon import Mastodon
 import twitter
 
 # The Set for storing the active state of live streamers
@@ -62,8 +63,9 @@ def check_streams():
         query = ','.join([str(i) for i in config['streamers'].keys()])
         # get the list of live streams and convert it into a Set of ids
         results = client.streams.get_live_streams(query)
-    except:
+    except Exception as e:
         logging.error("Fatal Twitch API exception!")
+        logging.error(e)
         return
     # create a dict mapping channel IDs to games
     games = {i['channel']['id']: i['game'] for i in results}
@@ -73,21 +75,29 @@ def check_streams():
 
     # use Set logic to find out the difference between the last check and now
     ended, started = set(), set()
-    if config['twitter']['send_end']:
+    if config['send_end']:
         ended = prevStreams - currentStreams
-    if config['twitter']['send_start']:
+    if config['send_start']:
         started = currentStreams - prevStreams
 
     logging.debug('Started streams: {0}, \
 Ended streams: {1}'.format(started, ended))
 
-    # iterate over both lists and send out tweets with the event formattings
+    # iterate over both lists and send out messages with the event formattings
     for i in started:
-        send_tweet(format_tweet(i,
-                                config['tweet_format']['stream_start'],
-                                games[i]))
+        message = format_tweet(i, config['tweet_format']['stream_start'],
+                               games[i])
+        if 'twitter' in config:
+            send_tweet(message)
+        if 'mastodon' in config:
+            send_toot(message)
+
     for i in ended:
-        send_tweet(format_tweet(i, config['tweet_format']['stream_end']))
+        message = format_tweet(i, config['tweet_format']['stream_end'])
+        if 'twitter' in config:
+            send_tweet(message)
+        if 'mastodon' in config:
+            send_toot(message)
 
     # update the state for next check
     prevStreams = currentStreams
@@ -124,8 +134,9 @@ def print_ids(usernames):
         client = TwitchClient(config['twitch']['client_id'],
                               config['twitch']['oauth_token'])
         users = client.users.translate_usernames_to_ids(usernames)
-    except:
+    except Exception as e:
         logging.error("Fatal Twitch API error!")
+        logging.error(e)
         return
     print("Copy and Paste the output below into your config.yaml file. \n")
     print('streamers:')
@@ -152,6 +163,24 @@ def send_tweet(msg):
     except UnicodeDecodeError:
         logging.error("The message could not be encoded.")
     except twitter.error.TwitterError as e:
+        logging.error(e)
+        status = "Tweet not sent!"
+        pass
+    logging.debug(status)
+
+
+def send_toot(msg):
+    global config
+    logging.info("Sending toot: " + msg)
+    mastodon = Mastodon(
+        api_base_url=config['mastodon']['api_base_url'],
+        client_id=config['mastodon']['client_key'],
+        client_secret=config['mastodon']['client_secret'],
+        access_token=config['mastodon']['access_token']
+    )
+    try:
+        status = mastodon.status_post(msg)
+    except Exception as e:
         logging.error(e)
         status = "Tweet not sent!"
         pass

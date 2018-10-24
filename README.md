@@ -1,16 +1,18 @@
 # RogueFishLives
 
-A configurable twitter bot built in python3 for sending out real time alerts when one of a group of tracked twitch.tv streamers goes live.
+A configurable Twitter and/or Mastodon bot built in python3 for sending out real time alerts when one of a group of tracked twitch.tv streamers goes live.
 
 ### Requires:
 
-`pip install python-twitch-client python-twitter`
+`pip install python-twitch-client python-twitter Mastodon.py`
 
 ### Usage:
 
 The basic usage is to:
 
-1. Apply for a twitter project and get the consumer and access information for the new account. Add this info into the config.yaml template included in this repo.
+1. If using twitter, apply for a twitter project and get the consumer and access information for the new account. Add this info into the config.yaml template included in this repo. If you don't want to post to twitter, remove the entire twitter section from the config.
+
+ If using mastodon, create a bot account and add a new application to it in the Development menu within Settings. From there you can find the client key, client secret, and access token to add to the config.yml template. If you don't want to post to mastodon, remove the entire mastodon section from the config.
 
 2. Get your [Twitch OAuth Token and Client ID](https://twitchapps.com/tokengen/) and add that to config.yaml
 
